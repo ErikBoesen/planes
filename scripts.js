@@ -21,7 +21,7 @@ const PLANE_WIDTH = 512,
       PLANE_SIZE_MULTIPLIER = 0.1,
       PLANE_DRAW_WIDTH = parseInt(PLANE_WIDTH * PLANE_SIZE_MULTIPLIER),
       PLANE_DRAW_HEIGHT = parseInt(PLANE_HEIGHT * PLANE_SIZE_MULTIPLIER);
-let planeImageRight = new Image(PLANE_WIDTH, PLANE_HEIGHT);
+let planeImageLeft = new Image(PLANE_WIDTH, PLANE_HEIGHT);
 planeImageLeft.src = 'plane_left.png';
 let planeImageRight = new Image(PLANE_WIDTH, PLANE_HEIGHT);
 planeImageRight.src = 'plane_right.png';
@@ -60,6 +60,13 @@ canvas.onmousemove = function(e) {
 }
 
 function move() {
+    planes = planes.filter(function(plane) {
+        return (
+            plane.x > 0 - PLANE_DRAW_WIDTH &&
+            plane.x < canvas.width + PLANE_DRAW_WIDTH &&
+            plane.y < canvas.height + PLANE_DRAW_HEIGHT
+        );
+    });
     for (plane of planes) {
         plane.x += plane.xSpeed;
         plane.y += plane.ySpeed;
@@ -75,7 +82,6 @@ function draw() {
         ctx.moveTo(currentPlane.x, currentPlane.y);
         ctx.lineTo(mousePosition.x, mousePosition.y);
         ctx.stroke();
-        console.log('Drawing line!');
     }
     if (currentPlane) {
         shownPlanes.push(currentPlane);
@@ -83,20 +89,28 @@ function draw() {
     for (plane of shownPlanes) {
         ctx.save();
         ctx.translate(plane.x, plane.y);
-        let angle;
+        let xOffset, yOffset;
         if (plane == currentPlane) {
-            angle = Math.atan2(plane.y - mousePosition.y, plane.x - mousePosition.x)
+            xOffset = plane.x - mousePosition.x;
+            yOffset = plane.y - mousePosition.y;
         } else {
-            angle = Math.atan2(plane.ySpeed, plane.xSpeed);
+            xOffset = plane.xSpeed;
+            yOffset = plane.ySpeed;
         }
-        angle += Math.PI / 6;
+        let planeLeft = (xOffset < 0);
+        let angle = planeLeft ?
+                        (0 - Math.atan2(yOffset, -xOffset)) :
+                        Math.atan2(yOffset, xOffset);
+        console.log(angle);
+        angle += (planeLeft ? -Math.PI : Math.PI) / 6;
         ctx.rotate(angle);
-        ctx.drawImage(planeImage, -PLANE_DRAW_WIDTH / 2, -PLANE_DRAW_HEIGHT / 2,
-                                  PLANE_DRAW_WIDTH, PLANE_DRAW_HEIGHT);
+        ctx.drawImage(planeLeft ? planeImageLeft : planeImageRight,
+                      -PLANE_DRAW_WIDTH / 2, -PLANE_DRAW_HEIGHT / 2,
+                      PLANE_DRAW_WIDTH, PLANE_DRAW_HEIGHT);
         ctx.restore();
     }
 }
 setInterval(function() {
     move();
     draw();
-}, 10);
+}, 20);
