@@ -18,12 +18,14 @@ let mousePosition = null;
 
 const PLANE_WIDTH = 512,
       PLANE_HEIGHT = 342,
-      PLANE_SIZE_MULTIPLIER = 0.1;
+      PLANE_SIZE_MULTIPLIER = 0.1,
+      PLANE_DRAW_WIDTH = parseInt(PLANE_WIDTH * PLANE_SIZE_MULTIPLIER),
+      PLANE_DRAW_HEIGHT = parseInt(PLANE_HEIGHT * PLANE_SIZE_MULTIPLIER);
 let planeImage = new Image(PLANE_WIDTH, PLANE_HEIGHT);
 planeImage.src = 'plane.png';
 
-const PLANE_SPEED = 0.1;
-const G = 2;
+const PLANE_SPEED = 0.04;
+const G = 0.3;
 
 canvas.onmousedown = function(e) {
     console.log('Mouse down!');
@@ -64,12 +66,20 @@ function move() {
 }
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#000000';
     shownPlanes = planes.slice();
+    if (mouseDown && currentPlane != null) {
+        ctx.beginPath();
+        ctx.moveTo(currentPlane.x, currentPlane.y);
+        ctx.lineTo(mousePosition.x, mousePosition.y);
+        ctx.stroke();
+        console.log('Drawing line!');
+    }
     if (currentPlane) {
         shownPlanes.push(currentPlane);
     }
     for (plane of shownPlanes) {
-        ctx.drawImage(planeImage, plane.x, plane.y, parseInt(512 * PLANE_SIZE_MULTIPLIER), parseInt(342 * PLANE_SIZE_MULTIPLIER));
+        ctx.drawImage(planeImage, plane.x - PLANE_DRAW_WIDTH / 2, plane.y - PLANE_DRAW_HEIGHT / 2, PLANE_DRAW_WIDTH, PLANE_DRAW_HEIGHT);
     }
 }
 setInterval(function() {
