@@ -99,9 +99,8 @@ function draw() {
         }
         let planeLeft = (xOffset < 0);
         let angle = planeLeft ?
-                        (0 - Math.atan2(yOffset, -xOffset)) :
+                        -Math.atan2(yOffset, -xOffset) :
                         Math.atan2(yOffset, xOffset);
-        console.log(angle);
         angle += (planeLeft ? -Math.PI : Math.PI) / 6;
         ctx.rotate(angle);
         ctx.drawImage(planeLeft ? planeImageLeft : planeImageRight,
