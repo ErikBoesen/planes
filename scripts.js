@@ -21,8 +21,10 @@ const PLANE_WIDTH = 512,
       PLANE_SIZE_MULTIPLIER = 0.1,
       PLANE_DRAW_WIDTH = parseInt(PLANE_WIDTH * PLANE_SIZE_MULTIPLIER),
       PLANE_DRAW_HEIGHT = parseInt(PLANE_HEIGHT * PLANE_SIZE_MULTIPLIER);
-let planeImage = new Image(PLANE_WIDTH, PLANE_HEIGHT);
-planeImage.src = 'plane.png';
+let planeImageRight = new Image(PLANE_WIDTH, PLANE_HEIGHT);
+planeImageLeft.src = 'plane_left.png';
+let planeImageRight = new Image(PLANE_WIDTH, PLANE_HEIGHT);
+planeImageRight.src = 'plane_right.png';
 
 const PLANE_SPEED = 0.04;
 const G = 0.3;
@@ -79,7 +81,19 @@ function draw() {
         shownPlanes.push(currentPlane);
     }
     for (plane of shownPlanes) {
-        ctx.drawImage(planeImage, plane.x - PLANE_DRAW_WIDTH / 2, plane.y - PLANE_DRAW_HEIGHT / 2, PLANE_DRAW_WIDTH, PLANE_DRAW_HEIGHT);
+        ctx.save();
+        ctx.translate(plane.x, plane.y);
+        let angle;
+        if (plane == currentPlane) {
+            angle = Math.atan2(plane.y - mousePosition.y, plane.x - mousePosition.x)
+        } else {
+            angle = Math.atan2(plane.ySpeed, plane.xSpeed);
+        }
+        angle += Math.PI / 6;
+        ctx.rotate(angle);
+        ctx.drawImage(planeImage, -PLANE_DRAW_WIDTH / 2, -PLANE_DRAW_HEIGHT / 2,
+                                  PLANE_DRAW_WIDTH, PLANE_DRAW_HEIGHT);
+        ctx.restore();
     }
 }
 setInterval(function() {
