@@ -26,8 +26,8 @@ planeImageLeft.src = 'plane_left.png';
 let planeImageRight = new Image(PLANE_WIDTH, PLANE_HEIGHT);
 planeImageRight.src = 'plane_right.png';
 
-const PLANE_SPEED = 0.04;
-const G = 0.3;
+const PLANE_SPEED = 0.06;
+const G = 0.05;
 
 canvas.onmousedown = function(e) {
     console.log('Mouse down!');
@@ -76,8 +76,12 @@ function move() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 1;
     shownPlanes = planes.slice();
     if (mouseDown && currentPlane != null) {
+        let lineDashLength = Math.sqrt(Math.pow(currentPlane.x - mousePosition.x, 2) +
+                              Math.pow(currentPlane.y - mousePosition.y, 2)) * 0.05;
+        ctx.setLineDash([lineDashLength, lineDashLength / 2]);
         ctx.beginPath();
         ctx.moveTo(currentPlane.x, currentPlane.y);
         ctx.lineTo(mousePosition.x, mousePosition.y);
